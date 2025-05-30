@@ -1,8 +1,8 @@
 package blocks
 
-import buffer.BufferElement
+import notation.NotationElement
 
 abstract class Block {
 
-    abstract fun toPolishNotation(): List<BufferElement>
+    abstract fun toPolishNotation(): List<NotationElement>
 }
