@@ -6,7 +6,11 @@ import notation.NotationElement
 class ExpressionParser {
 
     companion object {
-        fun parse(expression: String): List<NotationElement> {
+        fun parseArithmetic(expression: String): List<NotationElement> {
+            return listOf(ConstantElement(expression.toInt()))
+        }
+
+        fun parseLogical(expression: String): List<NotationElement> {
             return listOf(ConstantElement(expression.toInt()))
         }
     }

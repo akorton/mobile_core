@@ -8,7 +8,7 @@ import parser.ExpressionParser
 class AssignmentBlock(var variableName: String, var expression: String): Block() {
 
     override fun toPolishNotation(): List<NotationElement> {
-        return listOf(VariableElement(variableName)) + ExpressionParser.parse(expression) +
+        return listOf(VariableElement(variableName)) + ExpressionParser.parseArithmetic(expression) +
                 listOf(CommandElement(Commands.ASSIGN))
     }
 }
