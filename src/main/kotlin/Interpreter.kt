@@ -1,3 +1,4 @@
+import exceptions.DivisionByZeroException
 import exceptions.VariableAlreadyExistsException
 import exceptions.VariableIsNotInitialized
 import notation.CommandElement
@@ -10,6 +11,8 @@ class Interpreter {
     val buffer = mutableListOf<NotationElement>()
 
     fun run(inversePolishNotation: List<NotationElement>) {
+        // TODO
+        // mistake to block
         var idx = 0
 
         while (idx < inversePolishNotation.size) {
@@ -77,6 +80,51 @@ class Interpreter {
 
                         idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.WHILE_START,
                             Commands.WHILE_START, Commands.WHILE_END, true)
+                    }
+                    Commands.OP_UNARY_MINUS -> {
+                        val value = buffer.removeLast() as ConstantElement
+                        buffer.add(ConstantElement(-value.value))
+                    }
+                    Commands.OP_PLUS -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement(right + left))
+                    }
+                    Commands.OP_MINUS -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement(left - right))
+                    }
+                    Commands.OP_MULTIPLY -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement(right * left))
+                    }
+                    Commands.OP_DIV -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        if (right == 0) throw DivisionByZeroException()
+
+                        buffer.add(ConstantElement(left / right))
+                    }
+                    Commands.OP_MODULO -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        if (right == 0) throw DivisionByZeroException()
+
+                        buffer.add(ConstantElement(left % right))
+                    }
+                    Commands.GET_VALUE -> {
+                        val variableName = (buffer.removeLast() as VariableElement).variableName
+
+                        if (!variablesTable.containsKey(variableName)) throw VariableIsNotInitialized()
+
+                        buffer.add(ConstantElement(variablesTable[variableName]!!))
                     }
                 }
             } else {

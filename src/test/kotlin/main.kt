@@ -1,6 +1,10 @@
-import kotlin.math.pow
-
 fun main() {
+    simple_arithmetic_parser_test()
+    operation_order_test()
+    hard_test()
+    variables_test()
+    println("Parser tests passed!")
+
     assignment_test_variable_already_exists()
     assignment_test_variable_not_initialized()
     assignment_test_success()
@@ -24,4 +28,5 @@ fun main() {
     println("Condition tests passed!")
 
     while_false_test()
+    println("While tests passes!")
 }
