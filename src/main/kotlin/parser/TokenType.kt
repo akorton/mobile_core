@@ -1,6 +1,6 @@
 package parser;
 
-public enum TokenType {
+enum class TokenType {
     END,
     OP_PLUS,
     OP_MINUS,
