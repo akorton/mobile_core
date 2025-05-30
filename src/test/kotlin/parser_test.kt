@@ -6,10 +6,10 @@ import parser.ExpressionParser
 import kotlin.test.assertEquals
 
 private fun test(expression: String, expected: List<NotationElement>, expectedValue: Int,
-                 program: List<NotationElement> = listOf()
+                 program: List<NotationElement> = listOf(), testLogical: Boolean = false
 ) {
-    val res = ExpressionParser.parseArithmetic(expression)
-    assertEquals(expected, ExpressionParser.parseArithmetic(expression))
+    val res = if (!testLogical) ExpressionParser.parseArithmetic(expression) else ExpressionParser.parseLogical(expression)
+    assertEquals(expected, res)
     val interpreter = Interpreter()
     interpreter.run(program + res)
     assertEquals(expectedValue, (interpreter.buffer.last() as ConstantElement).value)
@@ -46,4 +46,11 @@ fun variables_test() {
             VariableElement("b"), CommandElement(Commands.INITIALIZE), VariableElement("b"),
             ConstantElement(2), CommandElement(Commands.ASSIGN))
     )
+}
+
+fun logical_parser_test() {
+    test("3 + 2 <= 1 * 5",
+        listOf(ConstantElement(3), ConstantElement(2), CommandElement(Commands.OP_PLUS),
+        ConstantElement(1), ConstantElement(5), CommandElement(Commands.OP_MULTIPLY),
+        CommandElement(Commands.LESS_OR_EQUAL)), 1, testLogical = true)
 }

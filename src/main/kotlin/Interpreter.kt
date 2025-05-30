@@ -9,6 +9,7 @@ import notation.VariableElement
 class Interpreter {
     val variablesTable = mutableMapOf<String, Int>()
     val buffer = mutableListOf<NotationElement>()
+    var outputStream = ""
 
     fun run(inversePolishNotation: List<NotationElement>) {
         // TODO
@@ -78,7 +79,7 @@ class Interpreter {
                     Commands.WHILE_END -> {
                         // if we are here we need to go back to the start of while
 
-                        idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.WHILE_START,
+                        idx = skipUntilWithBalance(idx - 1, inversePolishNotation, Commands.WHILE_START,
                             Commands.WHILE_START, Commands.WHILE_END, true)
                     }
                     Commands.OP_UNARY_MINUS -> {
@@ -126,6 +127,47 @@ class Interpreter {
 
                         buffer.add(ConstantElement(variablesTable[variableName]!!))
                     }
+                    Commands.EQUALS -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left == right).toInt()))
+                    }
+                    Commands.NOT_EQUALS -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left != right).toInt()))
+                    }
+                    Commands.GREATER -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left > right).toInt()))
+                    }
+                    Commands.GREATER_OR_EQUAL -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left >= right).toInt()))
+                    }
+                    Commands.LESS -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left < right).toInt()))
+                    }
+                    Commands.LESS_OR_EQUAL -> {
+                        val right = (buffer.removeLast() as ConstantElement).value
+                        val left = (buffer.removeLast() as ConstantElement).value
+
+                        buffer.add(ConstantElement((left <= right).toInt()))
+                    }
+                    Commands.PRINT -> {
+                        val element = (buffer.removeLast() as ConstantElement).value
+
+                        outputStream += element.toString() + "\n"
+                    }
                 }
             } else {
                 buffer.add(currentElement)
@@ -140,7 +182,7 @@ class Interpreter {
         var curIdx = idx
         var balance = 0
 
-        while (curIdx != program.size) {
+        while (true) {
             val curElement = program[curIdx]
 
             if (curElement is CommandElement) {
@@ -151,7 +193,7 @@ class Interpreter {
 
             curIdx += (if (goBackwards) -1 else 1)
         }
-
-        return curIdx
     }
+
+    private fun Boolean.toInt() = if (this) 1 else 0
 }

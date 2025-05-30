@@ -13,4 +13,10 @@ public enum TokenType {
     CLOSE_SQUARE_BRACKET,
     NUMBER,
     VAR_NAME,
+    EQUALS,
+    NOT_EQUALS,
+    LESS,
+    GREATER,
+    LESS_OR_EQUAL,
+    GREATER_OR_EQUAL
 }

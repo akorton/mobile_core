@@ -3,6 +3,7 @@ fun main() {
     operation_order_test()
     hard_test()
     variables_test()
+    logical_parser_test()
     println("Parser tests passed!")
 
     assignment_test_variable_already_exists()
@@ -28,5 +29,6 @@ fun main() {
     println("Condition tests passed!")
 
     while_false_test()
+    fizz_buzz_test()
     println("While tests passes!")
 }

@@ -14,4 +14,8 @@ class ConstantElement(var value: Int): NotationElement() {
     override fun hashCode(): Int {
         return value
     }
+
+    override fun toString(): String {
+        return "ConstantElement{value=$value}"
+    }
 }

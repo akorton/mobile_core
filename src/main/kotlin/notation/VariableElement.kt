@@ -14,4 +14,8 @@ class VariableElement(val variableName: String): NotationElement() {
     override fun hashCode(): Int {
         return variableName.hashCode()
     }
+
+    override fun toString(): String {
+        return "VariableElement{variableName=$variableName}"
+    }
 }

@@ -16,4 +16,8 @@ class CommandElement(val command: Commands): NotationElement() {
     override fun hashCode(): Int {
         return command.hashCode()
     }
+
+    override fun toString(): String {
+        return "CommandElement{command=${command.commandName}}"
+    }
 }

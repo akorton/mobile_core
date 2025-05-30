@@ -14,5 +14,12 @@ enum class Commands(val commandName: String) {
     OP_MULTIPLY("op_multiply"),
     OP_DIV("op_div"),
     OP_UNARY_MINUS("op_unary_minus"),
-    GET_VALUE("get_value")
+    GET_VALUE("get_value"),
+    EQUALS("eq"),
+    NOT_EQUALS("neq"),
+    LESS("l"),
+    GREATER("g"),
+    LESS_OR_EQUAL("leq"),
+    GREATER_OR_EQUAL("geq"),
+    PRINT("print")
 }

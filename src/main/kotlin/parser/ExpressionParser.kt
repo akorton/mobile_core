@@ -1,5 +1,6 @@
 package parser
 
+import Commands
 import notation.CommandElement
 import notation.ConstantElement
 import notation.NotationElement
@@ -12,6 +13,9 @@ class ExpressionParser {
         var pos = 0
         var tokenType: TokenType = TokenType.END
         var curToken: String = ""
+        val logicalOperations = listOf(TokenType.EQUALS, TokenType.NOT_EQUALS,
+            TokenType.LESS_OR_EQUAL, TokenType.GREATER_OR_EQUAL,
+            TokenType.LESS, TokenType.GREATER)
 
         private fun isDigit(ch: Char): Boolean {
             return ch in '0'..'9'
@@ -23,6 +27,14 @@ class ExpressionParser {
 
         private fun isDelimiter(ch: Char): Boolean {
             return ch in "+-*/%()[]"
+        }
+
+        private fun isLogical(ch: Char): Boolean {
+            return ch in "!=<>"
+        }
+
+        private fun isLogical(operation: TokenType): Boolean {
+            return logicalOperations.contains(operation)
         }
 
         private fun getToken() {
@@ -68,6 +80,23 @@ class ExpressionParser {
                 }
 
                 tokenType = TokenType.VAR_NAME
+                return
+            } else if (isLogical(curChar)) {
+                while (pos < expression.length && (isLogical(expression[pos]))) {
+                    curToken += expression[pos]
+                    pos++
+                }
+
+                tokenType = when (curToken) {
+                    "==" -> TokenType.EQUALS
+                    "!=" -> TokenType.NOT_EQUALS
+                    "<" -> TokenType.LESS
+                    "<=" -> TokenType.LESS_OR_EQUAL
+                    ">" -> TokenType.GREATER
+                    ">=" -> TokenType.GREATER_OR_EQUAL
+                    else -> throw ParserError("Unknown logical operation $curToken")
+                }
+
                 return
             }
 
@@ -185,8 +214,42 @@ class ExpressionParser {
             return ans
         }
 
+        fun parseLogicalPrimitive(): MutableList<NotationElement> {
+            val ans = parseTerm()
+
+            if (isLogical(tokenType)) {
+                var operation: Commands = Commands.EQUALS
+
+                when (tokenType) {
+                    TokenType.EQUALS -> operation = Commands.EQUALS
+                    TokenType.NOT_EQUALS -> operation = Commands.NOT_EQUALS
+                    TokenType.GREATER -> operation = Commands.GREATER
+                    TokenType.GREATER_OR_EQUAL -> operation = Commands.GREATER_OR_EQUAL
+                    TokenType.LESS -> operation = Commands.LESS
+                    TokenType.LESS_OR_EQUAL -> operation = Commands.LESS_OR_EQUAL
+                    else -> {}
+                }
+
+                getToken()
+                ans += parseTerm()
+                ans += CommandElement(operation)
+            }
+
+            return ans
+        }
+
         fun parseLogical(expression: String): List<NotationElement> {
-            return parseArithmetic(expression)
+            this.expression = expression
+            this.pos = 0
+            this.curToken = ""
+
+            getToken()
+            if (tokenType == TokenType.END) throw ParserError("Empty expression")
+
+            val ans = parseLogicalPrimitive()
+
+            if (tokenType != TokenType.END) throw ParserError("Expression end was not reached")
+            return ans
         }
     }
 }
