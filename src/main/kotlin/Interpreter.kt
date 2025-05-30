@@ -43,20 +43,40 @@ class Interpreter {
 
                         // if fl == 1 then just go into the if body which is the next block in program
                         if (fl.value == 0) {
-                            idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.IF_BODY_END)
+                            idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.IF_BODY_END,
+                                Commands.IF_START, Commands.IF_END, false)
                         }
                     }
                     Commands.IF_BODY_END -> {
                         // If we are here then if condition was true, so we need to skip through
                         // all the if-else and else
 
-                        idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.IF_END)
+                        idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.IF_END,
+                            Commands.IF_START, Commands.IF_END, false)
                     }
                     Commands.IF_END -> {
                         // nothing to do, this is just indicator block for skipping through else-if and else
                     }
                     Commands.IF_START -> {
                         // nothing to do, this is just indicator block for skipping through else-if and else
+                    }
+                    Commands.WHILE_START -> {
+                        // nothing to do, this is just indicator block for skipping back to start of while
+                    }
+                    Commands.WHILE_CHECK_CONDITION -> {
+                        val fl = buffer.removeLast() as ConstantElement
+
+                        // if fl == 1 then just go into the if body which is the next block in program
+                        if (fl.value == 0) {
+                            idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.WHILE_END,
+                                Commands.WHILE_START, Commands.WHILE_END, false)
+                        }
+                    }
+                    Commands.WHILE_END -> {
+                        // if we are here we need to go back to the start of while
+
+                        idx = skipUntilWithBalance(idx, inversePolishNotation, Commands.WHILE_START,
+                            Commands.WHILE_START, Commands.WHILE_END, true)
                     }
                 }
             } else {
@@ -67,7 +87,8 @@ class Interpreter {
         }
     }
 
-    private fun skipUntilWithBalance(idx: Int, program: List<NotationElement>, skipUntil: Commands): Int {
+    private fun skipUntilWithBalance(idx: Int, program: List<NotationElement>, skipUntil: Commands,
+                                     increaseBalance: Commands, decreaseBalance: Commands, goBackwards: Boolean): Int {
         var curIdx = idx
         var balance = 0
 
@@ -76,11 +97,11 @@ class Interpreter {
 
             if (curElement is CommandElement) {
                 if (curElement.command == skipUntil && balance == 0) return curIdx
-                else if (curElement.command == Commands.IF_START) balance++
-                else if (curElement.command == Commands.IF_END) balance--
+                else if (curElement.command == increaseBalance) balance++
+                else if (curElement.command == decreaseBalance) balance--
             }
 
-            curIdx++
+            curIdx += (if (goBackwards) -1 else 1)
         }
 
         return curIdx
