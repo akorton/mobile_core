@@ -1,4 +1,5 @@
 import exceptions.DivisionByZeroException
+import exceptions.IllegalVariableNameException
 import exceptions.VariableAlreadyExistsException
 import exceptions.VariableIsNotInitialized
 import notation.CommandElement
@@ -28,6 +29,10 @@ class Interpreter {
 
                         if (variablesTable.containsKey(variable.variableName)) {
                             throw VariableAlreadyExistsException()
+                        }
+
+                        if (!VariableElement.checkName(variable.variableName)) {
+                            throw IllegalVariableNameException()
                         }
 
                         variablesTable[variable.variableName] = 0

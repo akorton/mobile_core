@@ -17,11 +17,11 @@ class ExpressionParser {
             TokenType.LESS_OR_EQUAL, TokenType.GREATER_OR_EQUAL,
             TokenType.LESS, TokenType.GREATER)
 
-        private fun isDigit(ch: Char): Boolean {
+        fun isDigit(ch: Char): Boolean {
             return ch in '0'..'9'
         }
 
-        private fun isLetter(ch: Char): Boolean {
+        fun isLetter(ch: Char): Boolean {
             return (ch in 'a'..'z') || (ch in 'A'..'Z')
         }
 
